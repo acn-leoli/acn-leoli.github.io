@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Hello world!</title>
+    <title>Tencent Map Test</title>
     <style type="text/css">
     #container{
         /*地图(容器)显示大小*/
@@ -11,7 +11,7 @@
     }
     </style>
     <!--引入Javascript API GL，参数说明参见下文-->
-    <script src="https://map.qq.com/api/gljs?v=1.exp"></script>
+    <script src="https://map.qq.com/api/gljs?v=1.exp&key=PREBZ-WVJKH-73BDV-W3D52-CM3J3-ONB4P"></script>
     <script>
         //地图初始化函数，本例取名为init，开发者可根据实际情况定义
         function initMap() {
@@ -22,7 +22,8 @@
                 center: center,//设置地图中心点坐标
                 zoom: 17.2,   //设置地图缩放级别
                 pitch: 43.5,  //设置俯仰角
-                rotation: 45    //设置地图旋转角度
+                rotation: 45,    //设置地图旋转角度
+				viewMode: "2D"
             });
 			
 			var markerLayer = new TMap.MultiMarker({
