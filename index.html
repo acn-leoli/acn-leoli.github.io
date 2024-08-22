@@ -33,7 +33,7 @@
 					"myStyle": new TMap.MarkerStyle({ 
 						"width": 25,  // 点标记样式宽度（像素）
 						"height": 35, // 点标记样式高度（像素）
-						"src": '../img/marker.png',  //图片路径
+						
 						//焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
 						"anchor": { x: 16, y: 32 }  
 					}) 
@@ -42,16 +42,39 @@
 				geometries: [{
 					"id": "1",   //点标记唯一标识，后续如果有删除、修改位置等操作，都需要此id
 					"styleId": 'myStyle',  //指定样式id
-					"position": new TMap.LatLng(39.954104, 116.357503),  //点标记坐标位置
+					"position": new TMap.LatLng(23.125564,113.256196),  //点标记坐标位置
 					"properties": {//自定义属性
-						"title": "marker1"
+						"title": "捷泰广场"
 					}
-				}, {//第二个点标记
+				}, {
 					"id": "2",
 					"styleId": 'marker',
-					"position": new TMap.LatLng(23.126429,113.256914),
+					"position": new TMap.LatLng(23.126429,113.256930),
 					"properties": {
-						"title": "marker2"
+						"title": "知用中学"
+					}
+				}, {
+					"id": "3",
+					"styleId": 'marker',
+					"position": new TMap.LatLng(23.126187,113.255653),
+					"properties": {
+						"title": "光孝寺"
+					}
+				}
+				, {
+					"id": "4",
+					"styleId": 'marker',
+					"position": new TMap.LatLng(23.125319,113.255675),
+					"properties": {
+						"title": "中国银行"
+					}
+				}
+				, {
+					"id": "5",
+					"styleId": 'marker',
+					"position": new TMap.LatLng(23.125551,113.256775),
+					"properties": {
+						"title": "惠爱大厦"
 					}
 				}
 				]
