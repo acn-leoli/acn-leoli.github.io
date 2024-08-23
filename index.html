@@ -16,7 +16,7 @@
 		
 		var url="https://apis.map.qq.com/ws/direction/v1/driving/"; //请求路径
 			url+="?from=23.125564,113.256196";  //起点坐标
-			url+="&to=22.495970,113.947629";  //终点坐标
+			url+="&to=22.311483,113.941212";  //终点坐标
 			url+="&output=jsonp&callback=showRoute" ;  //指定JSONP回调函数名，本例为cb
 			url+="&key=PREBZ-WVJKH-73BDV-W3D52-CM3J3-ONB4P"; //开发key，可在控制台自助创建
 	
@@ -28,7 +28,6 @@
             map = new TMap.Map(document.getElementById('container'), {
                 center: center,//设置地图中心点坐标
                 zoom: 18,   //设置地图缩放级别
-                
 				viewMode: "2D"
             });
 			
