@@ -1,72 +1,145 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-    <title>Amap Test</title>
-    <style type="text/css">
-    html,
-    body,
-    #container {
-      width: 100%;
-      height: 100%;
-    }
-    </style>
-    <style type="text/css">
-        #panel {
-            position: fixed;
-            background-color: white;
-            max-height: 90%;
-            overflow-y: auto;
-            top: 10px;
-            right: 10px;
-            width: 280px;
-        }
-        #panel .amap-call {
-            background-color: #009cf9;
-            border-top-left-radius: 4px;
-   	        border-top-right-radius: 4px;
-        }
-        #panel .amap-lib-driving {
-	        border-bottom-left-radius: 4px;
-   	        border-bottom-right-radius: 4px;
-            overflow: hidden;
-        }
-    </style>
-    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
-    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
-    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&plugin=AMap.Driving&key=e3b65341f52bc6a5166d8d0840bfbf60"></script>
-    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
-</head>
-<body>
-<div id="container"></div>
-<div id="panel"></div>
-<script type="text/javascript">
-	window._AMapSecurityConfig = {
-          securityJsCode:'102f4164d6ca7ca3ef1842054b6d1edc',
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="initial-scale=1.0, user-scalable=no, width=device-width"
+    />
+    <title>AMAP Test</title>
+    <style>
+      html,
+      body,
+      #container {
+        width: 99%;
+        height: 95%;
       }
-    //基本地图加载
-    var map = new AMap.Map("container", {
-        resizeEnable: true,
-        center: [113.256196, 23.125564],
-        lang: "zh_en", //可选值：en，zh_en, zh_cn
-        zoom: 18
-    });
-    //构造路线导航类
-    var driving = new AMap.Driving({
-        map: map,
-        panel: "panel"
-    }); 
-    // 根据起终点经纬度规划驾车导航路线
-    driving.search(new AMap.LngLat(113.256196, 23.125564), new AMap.LngLat(113.941212, 22.311483), function(status, result) {
-        // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
-        if (status === 'complete') {
-            log.success('绘制驾车路线完成')
-        } else {
-            log.error('获取驾车数据失败：' + result)
-        }
-    });
-</script>
-</body>
+	  div.info {
+	    background: #f00;
+	  }
+    </style>
+	<script src="https://webapi.amap.com/loader.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+	
+	<button onclick="getRoute()">Get Route</button>
+	<button onclick="clearRoute()">Clear Route</button>
+	
+	<button onclick="setMarkers()">Set Markers</button>
+	
+	<script type="text/javascript">
+		var map, driving, marker;
+		
+		window._AMapSecurityConfig = {
+			securityJsCode: "102f4164d6ca7ca3ef1842054b6d1edc",
+			//serviceHost: 'https://1.2.3.4:80/_AMapService'
+		};
+	  
+		AMapLoader.load({
+			key: "e3b65341f52bc6a5166d8d0840bfbf60",
+			version: "1.4.15", // default 1.4.15
+		})
+		.then((AMap) => {
+			map = new AMap.Map("container", {
+				viewMode: '2D',
+				lang: 'zh_en',
+				center: [113.256196, 23.125564],
+				zooms: [3,18],
+				zoom: 18
+			});
+			
+			// https://lbs.amap.com/api/javascript-api/reference/route-search/#m_AMap.Driving
+			AMap.plugin('AMap.Driving', function() {
+			  driving = new AMap.Driving({
+				map: map,
+				showTraffic: false,
+				policy: AMap.DrivingPolicy.LEAST_TIME
+			  })
+			});
+		})
+		.catch((e) => {
+			console.error(e); //加载错误提示
+		});
+		
+		function getRoute() {
+			//var startLngLat = [113.256196, 23.125564]
+			//var endLngLat = [113.941212, 22.311483]
+
+			var startLngLat = [114.059614,22.543673]
+			var endLngLat = [114.177190,22.294678]
+
+			driving.search(startLngLat, endLngLat, function (status, result) {
+				console.log(result);
+			})
+		}
+		
+		function clearRoute() {
+			driving.clear();
+		}
+		
+		function setMarkers() {
+			marker = new AMap.Marker({
+				position: new AMap.LngLat(113.256196, 23.125564),
+				map: map,
+				//offset: new AMap.Pixel(-13, -30)
+			});
+			//marker.setMap(map);
+			
+			marker.setLabel({
+				content: "捷泰广场",
+				direction: 'bottom'
+			});
+			
+			marker = new AMap.Marker({
+				position: new AMap.LngLat(113.255653, 23.126187),
+				//offset: new AMap.Pixel(-13, -30)
+			});
+			marker.setMap(map);
+			
+			marker.setLabel({
+				content: "知用中学",
+				direction: 'bottom'
+			});
+			
+			marker = new AMap.Marker({
+				position: new AMap.LngLat(113.255675, 23.125319),
+				//offset: new AMap.Pixel(-13, -30)
+			});
+			marker.setMap(map);
+			
+			marker.setLabel({
+				content: "光孝寺",
+				direction: 'bottom'
+			});
+			
+			marker = new AMap.Marker({
+				position: new AMap.LngLat(113.256775, 23.125551),
+				//offset: new AMap.Pixel(-13, -30)
+			});
+			marker.setMap(map);
+			
+			marker.setLabel({
+				content: "中国银行",
+				direction: 'bottom'
+			});
+			
+			marker = new AMap.Marker({
+				position: new AMap.LngLat(113.256930, 23.126429),
+				//offset: new AMap.Pixel(-13, -30)
+			});
+			marker.setMap(map);
+			
+			marker.setLabel({
+				content: "惠爱大厦",
+				direction: 'bottom'
+			});
+			
+			map.setFitView();
+
+		}
+	</script>
+	
+  </body>
 </html>
