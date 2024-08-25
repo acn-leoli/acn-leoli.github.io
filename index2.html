@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Tencent Map Test</title>
+    <style type="text/css">
+    #container{
+        width:1200px;
+        height:800px;
+    }
+    </style>
+    <!--引入Javascript API GL，参数说明参见下文-->
+    <!--script src="https://map.qq.com/api/gljs?v=1.exp&key=PREBZ-WVJKH-73BDV-W3D52-CM3J3-ONB4P"></script-->
+	<script src="https://map.qq.com/api/js?v=2.exp&key=PREBZ-WVJKH-73BDV-W3D52-CM3J3-ONB4P"></script>
+    <script>
+		var map;
+		
+		var url="https://apis.map.qq.com/ws/direction/v1/driving/"; //请求路径
+			url+="?from=23.125564,113.256196";  //起点坐标
+			url+="&to=22.311483,113.941212";  //终点坐标
+			url+="&output=jsonp&callback=showRoute" ;  //指定JSONP回调函数名，本例为cb
+			url+="&key=PREBZ-WVJKH-73BDV-W3D52-CM3J3-ONB4P"; //开发key，可在控制台自助创建
+	
+        //地图初始化函数，本例取名为init，开发者可根据实际情况定义
+        function initMap() {
+            //定义地图中心点坐标
+            var center = new TMap.LatLng(23.125564,113.256196)
+            //定义map变量，调用 TMap.Map() 构造函数创建地图
+            map = new TMap.Map(document.getElementById('container'), {
+                center: center,//设置地图中心点坐标
+                zoom: 18,   //设置地图缩放级别
+				viewMode: "2D"
+            });
+			
+			var markerLayer = new TMap.MultiMarker({
+				map: map,  //指定地图容器
+				//样式定义
+				styles: {
+					//创建一个styleId为"myStyle"的样式（styles的子属性名即为styleId）
+					"myStyle": new TMap.MarkerStyle({ 
+						"width": 25,  // 点标记样式宽度（像素）
+						"height": 35, // 点标记样式高度（像素）
+						
+						//焦点在图片中的像素位置，一般大头针类似形式的图片以针尖位置做为焦点，圆形点以圆心位置为焦点
+						"anchor": { x: 16, y: 32 }  
+					}) 
+				},
+				//点标记数据数组
+				geometries: [{
+					"id": "1",   //点标记唯一标识，后续如果有删除、修改位置等操作，都需要此id
+					"styleId": 'myStyle',  //指定样式id
+					"position": new TMap.LatLng(23.125564,113.256196),  //点标记坐标位置
+					"properties": {//自定义属性
+						"title": "捷泰广场"
+					}
+				}, {
+					"id": "2",
+					"styleId": 'marker',
+					"position": new TMap.LatLng(23.126429,113.256930),
+					"properties": {
+						"title": "知用中学"
+					}
+				}, {
+					"id": "3",
+					"styleId": 'marker',
+					"position": new TMap.LatLng(23.126187,113.255653),
+					"properties": {
+						"title": "光孝寺"
+					}
+				}
+				, {
+					"id": "4",
+					"styleId": 'marker',
+					"position": new TMap.LatLng(23.125319,113.255675),
+					"properties": {
+						"title": "中国银行"
+					}
+				}
+				, {
+					"id": "5",
+					"styleId": 'marker',
+					"position": new TMap.LatLng(23.125551,113.256775),
+					"properties": {
+						"title": "惠爱大厦"
+					}
+				}
+				]
+			});
+			
+			jsonp_request(url);
+        }
+		
+		function jsonp_request(url){
+			var script=document.createElement('script');
+			script.src=url;
+			document.body.appendChild(script);
+		}
+		
+		function showRoute(ret){
+			//从结果中取出路线坐标串
+			var coors = ret.result.routes[0].polyline, pl = [];
+			//坐标解压（返回的点串坐标，通过前向差分进行压缩，因此需要解压）
+			var kr = 1000000;
+			for (var i = 2; i < coors.length; i++) {
+			  coors[i] = Number(coors[i - 2]) + Number(coors[i]) / kr;
+			}
+			//将解压后的坐标生成LatLng数组
+			for (var i = 0; i < coors.length; i += 2) {
+			  pl.push(new TMap.LatLng(coors[i], coors[i+1]));
+			}
+			display_polyline(pl)//显示路线
+		}
+		 
+		function display_polyline(pl){
+			//创建 MultiPolyline显示折线
+			var polylineLayer = new TMap.MultiPolyline({
+				id: 'polyline-layer', //图层唯一标识
+				map: map,//绘制到目标地图
+				//折线样式定义
+				styles: {
+					'style_blue': new TMap.PolylineStyle({
+						'color': '#F00', //线填充色
+						'width': 6, //折线宽度
+						'borderWidth': 5, //边线宽度
+						'borderColor': '#FFF', //边线颜色
+						'lineCap': 'round' //线端头方式
+					})
+				},
+				//折线数据定义
+				geometries: [
+					{
+						'id': 'pl_1',//折线唯一标识，删除时使用
+						'styleId': 'style_blue',//绑定样式名
+						'paths': pl
+					}
+				]
+			});
+		}
+    </script>
+</head>
+<!-- 页面载入后，调用init函数 -->
+<body onload="initMap()">
+    <!-- 定义地图显示容器 -->
+    <div id="container"></div>
+</body>
+</html>
