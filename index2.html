@@ -1,114 +1,69 @@
 <!doctype html>
 <html>
-
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
-  <title>英文、中英文地图</title>
-  <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
-  <style>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>位置经纬度 + 驾车规划路线</title>
+    <style type="text/css">
     html,
     body,
     #container {
       width: 100%;
       height: 100%;
     }
-
-
-    .custom-content-marker {
-      position: relative;
-      width: 25px;
-      height: 34px;
-    }
-    
-    .custom-content-marker img {
-      width: 100%;
-      height: 100%;
-    }
-    
-    .custom-content-marker .close-btn {
-      position: absolute;
-      top: -6px;
-      right: -8px;
-      width: 15px;
-      height: 15px;
-      font-size: 12px;
-      background: #ccc;
-      border-radius: 50%;
-      color: #fff;
-      text-align: center;
-      line-height: 15px;
-      box-shadow: -1px 1px 1px rgba(10, 10, 10, .2);
-    }
-    
-    .custom-content-marker .close-btn:hover{
-      background: #666;
-    }
-  </style>
+    </style>
+    <style type="text/css">
+        #panel {
+            position: fixed;
+            background-color: white;
+            max-height: 90%;
+            overflow-y: auto;
+            top: 10px;
+            right: 10px;
+            width: 280px;
+        }
+        #panel .amap-call {
+            background-color: #009cf9;
+            border-top-left-radius: 4px;
+   	        border-top-right-radius: 4px;
+        }
+        #panel .amap-lib-driving {
+	        border-bottom-left-radius: 4px;
+   	        border-bottom-right-radius: 4px;
+            overflow: hidden;
+        }
+    </style>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css" />
+    <script src="https://a.amap.com/jsapi_demos/static/demo-center/js/demoutils.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.15&plugin=AMap.Driving&key=123"></script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
 </head>
-
 <body>
-  <div id="container"></div>
-  <div class="input-card" style="width:13rem">
-    <h4>底图语言切换</h4>
-    <div id="lang">
-      <div class="input-item"><input id="zh_en" name="language" type="radio" checked="checked"><span class="input-text">中英文对照</span></div>
-      <div class="input-item"><input id="en" name="language" type="radio"><span class="input-text">英文底图</span></div>
-      <div class="input-item"><input id="zh_cn" name="language" type="radio"><span class="input-text">中文底图</span></div>
-    </div>
-  </div>
-  <script src="https://cache.amap.com/lbs/static/es5.min.js"></script>
-  <script src="https://webapi.amap.com/maps?v=1.4.15&key=e3b65341f52bc6a5166d8d0840bfbf60"></script>
-  <script>
-      // 
-    //初始化地图
-    var map = new AMap.Map('container', {
-      resizeEnable: true,
-      center: [113.256196, 23.125564],
-      lang: "zh_en", //可选值：en，zh_en, zh_cn
-      zoom: 18
+<div id="container"></div>
+<div id="panel"></div>
+<script type="text/javascript">
+    //基本地图加载
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        center: [113.256196, 23.125564],
+        lang: "zh_en", //可选值：en，zh_en, zh_cn
+        zoom: 18
     });
-
-    //绑定radio点击事件
-    var radios = document.querySelectorAll("#lang input");
-    radios.forEach(function(ratio) {
-      ratio.onclick = setLang;
+    //构造路线导航类
+    var driving = new AMap.Driving({
+        map: map,
+        panel: "panel"
+    }); 
+    // 根据起终点经纬度规划驾车导航路线
+    driving.search(new AMap.LngLat(113.256196, 23.125564), new AMap.LngLat(113.941212, 22.311483), function(status, result) {
+        // result 即是对应的驾车导航信息，相关数据结构文档请参考  https://lbs.amap.com/api/javascript-api/reference/route-search#m_DrivingResult
+        if (status === 'complete') {
+            log.success('绘制驾车路线完成')
+        } else {
+            log.error('获取驾车数据失败：' + result)
+        }
     });
-
-    function setLang() {
-      map.setLang(this.id);
-    }
-
-    //function setMarker() {
-      const markerContent = `<div class="custom-content-marker">
-        <img src="//a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png">
-        </div>`
-      const position = new AMap.LngLat(113.256196, 23.125564); //Marker 经纬度
-      const marker = new AMap.Marker({
-        position: position,
-        //content: markerContent, //将 html 传给 content
-        //offset: new AMap.Pixel(-13, -30), //以 icon 的 [center bottom] 为原点
-      });
-      map.add(marker);
-    //}
-
-    // https://restapi.amap.com/v3/direction/driving?origin=116.481028,39.989643&destination=116.465302,40.004717&extensions=all&output=xml&key=<用户的key>
-
-    AMap.plugin('AMap.Driving', function() {
-      var driving = new AMap.Driving({
-        // 驾车路线规划策略，AMap.DrivingPolicy.LEAST_TIME是最快捷模式
-        policy: AMap.DrivingPolicy.LEAST_TIME
-      })
-      
-      var startLngLat = [113.256196, 23.125564]
-      var endLngLat = [113.941212, 22.311483]
-      
-      driving.search(startLngLat, endLngLat, function (status, result) {
-        // 未出错时，result即是对应的路线规划方案
-      })
-    })
-  </script>
+</script>
 </body>
-
 </html>
