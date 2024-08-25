@@ -47,6 +47,13 @@
     function setLang() {
       map.setLang(this.id);
     }
+
+    const position = new AMap.LngLat(113.256196, 23.125564); //Marker 经纬度
+    const marker = new AMap.Marker({
+      position: position,
+      //content: markerContent, //将 html 传给 content
+      offset: new AMap.Pixel(-13, -30), //以 icon 的 [center bottom] 为原点
+    });
   </script>
 </body>
 
