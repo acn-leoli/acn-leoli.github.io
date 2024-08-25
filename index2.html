@@ -14,6 +14,37 @@
       width: 100%;
       height: 100%;
     }
+
+
+    .custom-content-marker {
+      position: relative;
+      width: 25px;
+      height: 34px;
+    }
+    
+    .custom-content-marker img {
+      width: 100%;
+      height: 100%;
+    }
+    
+    .custom-content-marker .close-btn {
+      position: absolute;
+      top: -6px;
+      right: -8px;
+      width: 15px;
+      height: 15px;
+      font-size: 12px;
+      background: #ccc;
+      border-radius: 50%;
+      color: #fff;
+      text-align: center;
+      line-height: 15px;
+      box-shadow: -1px 1px 1px rgba(10, 10, 10, .2);
+    }
+    
+    .custom-content-marker .close-btn:hover{
+      background: #666;
+    }
   </style>
 </head>
 
@@ -48,6 +79,10 @@
       map.setLang(this.id);
     }
 
+    const markerContent = `<div class="custom-content-marker">
+      <img src="//a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png">
+      <div class="close-btn" onclick="clearMarker()">X</div>
+      </div>`
     const position = new AMap.LngLat(113.256196, 23.125564); //Marker 经纬度
     const marker = new AMap.Marker({
       position: position,
