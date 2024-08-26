@@ -64,11 +64,8 @@
 		});
 		
 		function getRoute() {
-			//var startLngLat = [113.256196, 23.125564]
-			//var endLngLat = [113.941212, 22.311483]
-
-			var startLngLat = [114.059614,22.543673]
-			var endLngLat = [114.177190,22.294678]
+			var startLngLat = [113.256196, 23.125564]
+			var endLngLat = [113.941212, 22.311483]
 
 			driving.search(startLngLat, endLngLat, function (status, result) {
 				console.log(result);
@@ -93,7 +90,7 @@
 			});
 			
 			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.255653, 23.126187),
+				position: new AMap.LngLat(113.256930, 23.126429),
 				//offset: new AMap.Pixel(-13, -30)
 			});
 			marker.setMap(map);
@@ -104,7 +101,7 @@
 			});
 			
 			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.255675, 23.125319),
+				position: new AMap.LngLat(113.255653, 23.126187),
 				//offset: new AMap.Pixel(-13, -30)
 			});
 			marker.setMap(map);
@@ -115,7 +112,7 @@
 			});
 			
 			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.256775, 23.125551),
+				position: new AMap.LngLat(113.255675, 23.125319),
 				//offset: new AMap.Pixel(-13, -30)
 			});
 			marker.setMap(map);
@@ -126,7 +123,7 @@
 			});
 			
 			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.256930, 23.126429),
+				position: new AMap.LngLat(113.256775, 23.125551),
 				//offset: new AMap.Pixel(-13, -30)
 			});
 			marker.setMap(map);
