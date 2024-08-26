@@ -64,12 +64,21 @@
 		});
 		
 		function getRoute() {
+			getRoute2();
+		}
+		
+		function getRoute1() {
 			var startLngLat = [113.256196, 23.125564]
 			var endLngLat = [113.941212, 22.311483]
 
 			driving.search(startLngLat, endLngLat, function (status, result) {
+				//console.log(result);
 				console.log(result);
 			})
+		}
+		
+		function getRoute2() {
+			getRouteByWebAPI();
 		}
 		
 		function clearRoute() {
@@ -135,6 +144,47 @@
 			
 			map.setFitView();
 
+		}
+		
+		
+		function getRouteByWebAPI() {
+			var xmlhttp,url="https://restapi.amap.com/v3/direction/driving?origin=113.256196,23.125564&destination=113.941212,22.311483&key=dc7fd5104bcaeff4e13da54769e6693e";
+			
+			xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange=function(){
+				if (xmlhttp.readyState==4 && xmlhttp.status==200){
+					callBack(JSON.parse(xmlhttp.responseText));
+				}
+			}
+			xmlhttp.open("GET",url,true);
+			xmlhttp.send();
+
+		}
+		
+		function callBack(result) {
+			var steps = result.route.paths[0].steps;
+			const lines = steps
+							.map(i => `${i.polyline}`)
+							.join(";")
+							.split(";")
+							.map(i => new AMap.LngLat(i.split(",")[0], i.split(",")[1]));
+			
+			console.log(lines);
+			
+			// https://lbs.amap.com/api/javascript-api/reference/overlay#polygon
+			var polyline = new AMap.Polyline({
+				map: map,
+				path: lines,
+				isOutline: true,
+				outlineColor: '#FFF',
+				borderWeight: 2,
+				strokeColor: '#0091FF',
+				strokeOpacity: 1,
+				strokeWeight: 5,
+				lineJoin: 'round'
+			});
+			
+			map.setFitView();
 		}
 	</script>
 	
