@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Tencent Map Test</title>
+    <style type="text/css">
+    #container{
+        width:1200px;
+        height:800px;
+    }
+    </style>
+    <script src="https://map.qq.com/api/gljs?v=1.exp&key=YEYBZ-TS7WQ-KFD57-BZRXD-D4L3Q-I5FY3"></script>
+    <script>
+		var map;
+
+        function initMap() {
+            var center = new TMap.LatLng(23.125564,113.256196)
+			
+            map = new TMap.Map(document.getElementById('container'), {
+                center: center,
+                zoom: 20,
+				viewMode: "2D",
+				pitch: 0,
+				rotation: 0,
+				showControl: false,
+				//mapStyleId: 'style1'
+            });
+        }
+		
+		function showPickupDropoffSpots() {
+			var spots = [
+				{lat: 23.126429, lng: 113.256930, address: "广州市越秀区百灵路83号知用中学"},
+				{lat: 23.125564, lng: 113.256196, address: "广州市越秀区中山六路218-222号捷泰广场"},
+				{lat: 23.126187, lng: 113.255653, address: "广州市越秀区光孝路109号光孝寺"},
+				{lat: 23.125551, lng: 113.256775, address: "广州市越秀区中山六路200号惠爱大厦"},
+				{lat: 23.125319, lng: 113.255675, address: "广州市越秀区中山六路240号中国银行"}
+			];
+			
+			var markerGeometries = 
+					spots.map((spot, index) => {
+						return {
+							id: 'marker-' + index,
+							styleId: 'myMarker',
+							position: new TMap.LatLng(spot.lat, spot.lng),
+							content: spot.address,
+							properties: {
+								title: spot.address
+							}
+						}
+					});
+			
+			console.log(markerGeometries);
+			
+			var markerLayer = new TMap.MultiMarker({
+				map: map,
+				styles: {
+					"myMarker": new TMap.MarkerStyle({ 
+						width: 25,
+						height: 35,
+						anchor: { x: 16, y: 32 },
+						offset: { x: 0, y: 40 },
+						color: '#3777FF',
+						size: 16
+					}) 
+				},
+				
+				geometries: markerGeometries
+			});
+			
+			
+			var ne = {lat: -Infinity, lng: -Infinity}
+				sw = {lat: Infinity, lng: Infinity};
+			
+			spots.forEach(spot => {
+				if (spot.lat > ne.lat || (spot.lat === ne.lat && spot.lng > ne.lng)) {
+					ne.lat = spot.lat;
+					ne.lng = spot.lng;
+				}
+				if (spot.lat < sw.lat || (spot.lat === sw.lat && spot.lng < sw.lng)) {
+					sw.lat = spot.lat;
+					sw.lng = spot.lng;
+				}
+			});
+			
+			fitView(ne, sw);
+		}
+		
+		function fitView(ne, sw) {
+			var viewPadding = 0.0003,
+				latLngBounds = new TMap.LatLngBounds(
+					new TMap.LatLng(sw.lat - viewPadding, sw.lng - viewPadding),
+					new TMap.LatLng(ne.lat + viewPadding, ne.lng + viewPadding)
+				);
+			
+			map.fitBounds(latLngBounds);
+		}
+		
+		
+		
+		
+		
+		function showRoute() {
+			var wsApiUrl = "https://apis.map.qq.com/ws/direction/v1/driving/";
+			wsApiUrl += "?from=23.125564,113.256196";
+			wsApiUrl += "&to=22.311483,113.941212";
+			wsApiUrl += "&output=jsonp";
+			wsApiUrl += "&callback=drawRoute" ;
+			wsApiUrl += "&key=PREBZ-WVJKH-73BDV-W3D52-CM3J3-ONB4P";
+			
+			jsonp_request(wsApiUrl);
+		}
+		
+		function jsonp_request(url){
+			var script=document.createElement('script');
+			script.src=url;
+			document.body.appendChild(script);
+		}
+		
+		function drawRoute(ret){
+			//从结果中取出路线坐标串
+			var coors = ret.result.routes[0].polyline, pl = [];
+			//坐标解压（返回的点串坐标，通过前向差分进行压缩，因此需要解压）
+			var kr = 1000000;
+			for (var i = 2; i < coors.length; i++) {
+			  coors[i] = Number(coors[i - 2]) + Number(coors[i]) / kr;
+			}
+			//将解压后的坐标生成LatLng数组
+			for (var i = 0; i < coors.length; i += 2) {
+			  pl.push(new TMap.LatLng(coors[i], coors[i+1]));
+			}
+			display_polyline(pl)//显示路线
+		}
+		 
+		function display_polyline(pl){
+			//创建 MultiPolyline显示折线
+			var polylineLayer = new TMap.MultiPolyline({
+				id: 'polyline-layer', //图层唯一标识
+				map: map,//绘制到目标地图
+				//折线样式定义
+				styles: {
+					'style_blue': new TMap.PolylineStyle({
+						'color': '#F00', //线填充色
+						'width': 6, //折线宽度
+						'borderWidth': 5, //边线宽度
+						'borderColor': '#FFF', //边线颜色
+						'lineCap': 'round' //线端头方式
+					})
+				},
+				//折线数据定义
+				geometries: [
+					{
+						'id': 'pl_1',//折线唯一标识，删除时使用
+						'styleId': 'style_blue',//绑定样式名
+						'paths': pl
+					}
+				]
+			});
+		}
+    </script>
+</head>
+<body onload="initMap()">
+    <div id="container"></div>
+	<br>
+	<button onclick="showPickupDropoffSpots()">Show Pickup / Drop-Off Spots</button>
+	
+	<!--
+	<button onclick="showRoute()">Show Route</button>
+	-->
+</body>
+</html>
