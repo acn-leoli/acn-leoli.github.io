@@ -23,11 +23,18 @@
   </head>
   <body>
     <div id="container"></div>
+	<br>
+	<button onclick="showPickupDropoffSpots()">Show Pickup / Drop-Off Spots</button>
+	<button onclick="changeLanguage('zh_cn')">Chinese</button>
+	<button onclick="changeLanguage('en')">English</button>
+	<button onclick="changeLanguage('zh_en')">Chinese + English</button>
 	
+	<!--
 	<button onclick="getRoute()">Get Route</button>
 	<button onclick="clearRoute()">Clear Route</button>
+	-->
 	
-	<button onclick="setMarkers()">Set Markers</button>
+	
 	
 	<script type="text/javascript">
 		var map, driving, marker;
@@ -36,6 +43,9 @@
 			securityJsCode: "102f4164d6ca7ca3ef1842054b6d1edc",
 			//serviceHost: 'https://1.2.3.4:80/_AMapService'
 		};
+		
+		var center = {lat: 23.125564, lng: 113.256196};
+		
 	  
 		AMapLoader.load({
 			key: "e3b65341f52bc6a5166d8d0840bfbf60",
@@ -45,13 +55,15 @@
 			map = new AMap.Map("container", {
 				viewMode: '2D',
 				//lang: 'zh_en',
-				lang: 'en',
-				center: [113.256196, 23.125564],
+				//lang: 'en',
+				lang: 'zh_cn',
 				expandZoomRange: true,
 				zooms: [3,20],
-				zoom: 18
+				zoom: 18,
+				center: [center.lng, center.lat]
 			});
 			
+			/*
 			// https://lbs.amap.com/api/javascript-api/reference/route-search/#m_AMap.Driving
 			AMap.plugin('AMap.Driving', function() {
 			  driving = new AMap.Driving({
@@ -60,10 +72,57 @@
 				policy: AMap.DrivingPolicy.LEAST_TIME
 			  })
 			});
+			*/
 		})
 		.catch((e) => {
-			console.error(e); //加载错误提示
+			console.error(e);
 		});
+		
+		function changeLanguage(lang) {
+			map.setLang(lang);
+			
+			if (lang === 'zh_cn') {
+				map.setZooms([3,20]);
+				return;
+			}
+			
+			map.setZooms([3,18]);
+			if (map.getZoom() > 18) {
+				map.setZoom(18);
+			}
+		}
+		
+		function showPickupDropoffSpots() {
+			var spots = [
+				{lat: 23.126429, lng: 113.256930, address: "广州市越秀区百灵路83号知用中学"},
+				{lat: 23.125564, lng: 113.256196, address: "广州市越秀区中山六路218-222号捷泰广场"},
+				{lat: 23.126187, lng: 113.255653, address: "广州市越秀区光孝路109号光孝寺"},
+				{lat: 23.125551, lng: 113.256775, address: "广州市越秀区中山六路200号惠爱大厦"},
+				{lat: 23.125319, lng: 113.255675, address: "广州市越秀区中山六路240号中国银行"}
+			];
+			
+			spots.forEach(spot => {
+				marker = new AMap.Marker({
+					position: new AMap.LngLat(spot.lng, spot.lat),
+					map: map,
+					//offset: new AMap.Pixel(-13, -30)
+				});
+				
+				marker.setLabel({
+					content: spot.address,
+					direction: 'bottom'
+				});
+				
+				marker.setMap(map);
+			});
+			
+			map.setFitView();
+		}
+		
+		
+		
+		
+		
 		
 		function getRoute() {
 			getRoute2();
@@ -86,68 +145,6 @@
 		function clearRoute() {
 			driving.clear();
 		}
-		
-		function setMarkers() {
-			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.256196, 23.125564),
-				map: map,
-				//offset: new AMap.Pixel(-13, -30)
-			});
-			//marker.setMap(map);
-			
-			marker.setLabel({
-				content: "捷泰广场",
-				direction: 'bottom'
-			});
-			
-			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.256930, 23.126429),
-				//offset: new AMap.Pixel(-13, -30)
-			});
-			marker.setMap(map);
-			
-			marker.setLabel({
-				content: "知用中学",
-				direction: 'bottom'
-			});
-			
-			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.255653, 23.126187),
-				//offset: new AMap.Pixel(-13, -30)
-			});
-			marker.setMap(map);
-			
-			marker.setLabel({
-				content: "光孝寺",
-				direction: 'bottom'
-			});
-			
-			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.255675, 23.125319),
-				//offset: new AMap.Pixel(-13, -30)
-			});
-			marker.setMap(map);
-			
-			marker.setLabel({
-				content: "中国银行",
-				direction: 'bottom'
-			});
-			
-			marker = new AMap.Marker({
-				position: new AMap.LngLat(113.256775, 23.125551),
-				//offset: new AMap.Pixel(-13, -30)
-			});
-			marker.setMap(map);
-			
-			marker.setLabel({
-				content: "惠爱大厦",
-				direction: 'bottom'
-			});
-			
-			map.setFitView();
-
-		}
-		
 		
 		function getRouteByWebAPI() {
 			var xmlhttp,url="https://restapi.amap.com/v3/direction/driving?origin=113.256196,23.125564&destination=113.941212,22.311483&key=dc7fd5104bcaeff4e13da54769e6693e";
