@@ -7,22 +7,30 @@
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet">
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
 <style>
-body { margin: 0; padding: 0; }
-#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+html,
+      body,
+      #map {
+        width: 99%;
+        height: 95%;
+      }
+	  div.info {
+	    background: #f00;
+	  }
 </style>
 </head>
 <body>
 <div id="map"></div>
 	<script>
+		// coordinate conversion constants
 		var x_pi = 3.14159265358979324 * 3000.0 / 180.0;
 		var pi = 3.14159265358979324;
 		var a = 6378245.0;
 		var ee = 0.00669342162296594323;
 		
-		function convert(gg_lat, gg_lon){
+		function convert(lat, lng){
 			var point={};
-			var x = gg_lon;
-			var y = gg_lat;
+			var x = lat;
+			var y = lng;
 			var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * x_pi);
 			var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * x_pi);
 			var bd_lon = z * Math.cos(theta) + 0.0065;
@@ -39,7 +47,9 @@ body { margin: 0; padding: 0; }
 		var point = convert(amapLng, amapLat);
 		console.log(point);
 			
-		mapboxgl.accessToken = 'pk.eyJ1IjoiaXNtZWxlbyIsImEiOiJjbTBidzZtZzEwYzgyMmxvb2xwM2Y2emEyIn0.C6_wv77e4_FWr3QIAksTeQ';
+		//mapboxgl.accessToken = 'pk.eyJ1IjoiaXNtZWxlbyIsImEiOiJjbTBidzZtZzEwYzgyMmxvb2xwM2Y2emEyIn0.C6_wv77e4_FWr3QIAksTeQ';
+		mapboxgl.accessToken = 'pk.eyJ1IjoiaXNtZWxlbyIsImEiOiJjbTBmN3B1dHMwMWlrMm9wdjk0NG1taXZzIn0.thO_e6T7NwHZdNhGiTtwDA';
+		//mapboxgl.accessToken = 'pk.eyJ1IjoiaXNtZWxlbyIsImEiOiJjbTBmOGZiNGEwdjljMnBwcGIzNGJpYnU3In0.yYmEF7CPz0U5Vje4GVrskg';
 		const map = new mapboxgl.Map({
 			container: 'map', // container ID
 			//center: [point.lat, point.lng],
